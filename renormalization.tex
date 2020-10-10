@@ -1,0 +1,487 @@
+\documentclass[autodetect-engine,dvipdfmx-if-dvi,ja=standard]{bxjsarticle}
+\usepackage{ascmac}
+\usepackage{braket}
+\usepackage{amsmath,amssymb}
+\usepackage{color,graphicx,hyperref}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{here}
+\usepackage{theorem}
+\theoremstyle{break}
+\theorembodyfont{\upshape}
+\usepackage{cases}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usetikzlibrary{calc,intersections,positioning,shapes,arrows}
+\usepackage{pgfplots}
+\usepackage{pdfpages}
+\begin{document}
+    \title{孕ませて流産パンチ}
+    \author{@mocomoco$\_$cute}
+    \maketitle
+    \tableofcontents
+    \newpage
+    %\setcounter{section}{-1}
+    なんやかんやで、高橋相転移に愛着があるので適宜その内容を入れている。しかし奴は非常に読みにくい。西森相転移を読んだあとなら良さそう。
+    相関関数の計算に当たって筆者が悩んでいたところの議論に付き合って下さった岡崎寿司美氏に感謝します。
+    密度行列からエントロピーを定義する。
+    \begin{align}
+        S:=-\mathrm{Tr}[\rho\log\rho]
+    \end{align}
+
+    \section{相転移と臨界現象}
+        統計力学ですごいことが言えるらしい。
+    \section{平均場の理論}
+        \subsection{平均場近似}
+            
+            イジング模型のハミルトニアンは
+            \begin{align}
+                H=-J\sum_{\braket{S,S'}}S S' -h\sum_S S
+            \end{align}
+            で与えられた。分配関数の計算においてはこのハミルトニアンをスピンの１次に近似することは重要である。
+            \if0
+            このカノニカル分布における分配関数は
+            \begin{align}
+                Z=\mathrm{Tr}{e^{-\beta H}}=\mathrm{Tr}[\exp\beta (J\sum_{\braket{S,S'}}S S' +h\sum_S S)]
+            \end{align}
+            であって、異なったスピン同士の積があるから計算が面倒になる。
+            \fi
+            \if0
+            一つのスピンのみに注目して、周りのスピンを平均値で置き換えることを考える。$m:=\braket{S'}_{\partial S},\delta S:=S-m$として、
+            \begin{align}
+                H&=-J\sum_{\braket{\delta S,\delta S'}}(m+\delta S) (m+\delta S') -h\sum_S S\\
+                &=-Jm^2 N_B +-Jm\sum_{\braket{\delta S,\delta S'}}
+            \end{align}
+            \fi
+            ハミルトニアンの第１項はスピンを適当な値周りで展開して、その値からのズレが小さいならばずれ同士の積を無視することができる。
+            \begin{align}
+                SS'=(m+\delta S)(m+\delta 'S)=m^2+m(\delta S' +\delta S) +O(\delta S^2)=-m^2+m(S+S')+O(\delta S^2)
+            \end{align}
+            $S$を$m$周りで展開できるとして、ハミルトニアンは$N_B$を相互作用するスピン対の数,$z$を配位数として
+            \begin{align}
+                H\simeq N_B Jm^2 -(Jmz+h)\sum_{S}S
+            \end{align}
+            と近似される。第二項からスピンが有効磁場$Jmz+h$を受けているという描像が得られるが、これはスピン同士の相互作用を適当な値周りで展開したことに他ならない。
+            $m$については適当に与えた物だから適当な自己無撞着方程式系を用いて決定しなければならない。系の空間的な一様性から、$m=\braket{S}$としてよく、$m$をカノニカル分布の平均値として与えるならば
+            \begin{align}
+                m=\braket{S}=Z^{-1}\mathrm{Tr}[S\exp(-\beta H)]=\mathrm{tanh}\beta(Jmz+h)\label{1}
+            \end{align}
+            というよく知られた結果が得られる。
+            \subsubsection{一次相転移の不連続性}
+                自己無撞着方程式\eqref{1}式の解は相転移温度を超えない範囲で3つの値をもつ。複数の解に対応して(擬似\footnote{熱力学関数が共役な変数を引数に含むことはないが、擬似自由エネルギーは含む。})自由エネルギーがそれぞれ定まる。
+                擬似自由エネルギーに極小値を与える解に対して、最小ではないならば準安定状態、最小であるならば安定状態と呼ばれる。擬似自由エネルギー$f(m,h)$が図のようである場合を考える。
+                \begin{figure}
+                    \begin{center}
+                        \begin{tikzpicture}[domain=-4:4]
+                            \draw[->] (-3,0) -- (3,0) node[right] {$h$};%横軸（x軸）
+                            \draw[->] (0,-0.5) -- (0,4.2) node[above] {$f$:擬似自由エネルギー};%縦軸
+                            \draw[color=red] plot (\x,{ln(-\x+10)}) node[right] {$f(m',h)$};
+                            \draw[color=blue] plot (\x,{ln(\x+10)}) node[right] {$f(m'',h)$};
+                            \draw [domain=-4:0,thick] plot (\x,{ln(\x+10)}) ;
+                            \draw [domain=0:4,thick] plot (\x,{ln(-\x+10)}) ;
+                            \coordinate (O) at (0,0) node [above right] at (O) {$h^*$};
+                        \end{tikzpicture}
+                    \end{center}
+                    \caption{擬似自由エネルギー。実現されるのは黒線の方であって、黒線でない方はその区間で熱力学関数としての(直接的な)意味を持たない。}
+                \end{figure}
+                図から$f(m',h),f(m'',h)$の大小関係は$h=h^*$において切り替わり、この時に熱力学関数の一回微分に不連続性が生じる。
+            \subsubsection{密度行列の近似}
+                平均場近似で得られるハミルトニアンはスピンと有効場の相互作用であり、１体相互作用であった。
+               
+                \if0
+                    ハミルトニアンを１体相互作用に近似するのではなく、量子もつれのない波動関数で近似しよう。
+                    これは試行関数として
+                    \begin{align}
+                        \ket{S_1}\otimes \ket{S_2} \otimes \cdots \ket{S_N}
+                    \end{align}
+                    と直積で書くことができるものを選ぶことに等しい($\ket{S_i}=c^i _+\ket{+}+c^i _-\ket{-}$のようなものであって良い。)。
+                \fi
+                ハミルトニアンを１体相互作用に近似するのではなく、密度行列を近似することを考えよう。それぞれのスピンの混合状態が無相関であること\footnote{定義は\url{https://www2.yukawa.kyoto-u.ac.jp/ws/2013/yitpqip/pdf/ishizaka1.pdf}の37頁}密度行列を"試行関数"として選ぶ。
+                \begin{align}
+                    \rho_{\mathrm{whole}}=\rho_1 \otimes \rho_2 \otimes \cdots \rho_N
+                \end{align}
+                基底についてはそれぞれの密度行列を対角化する規定をとってトレースを計算する。等温環境で$\rho_{\mathrm{whole}}$としてもっとも良い近似となっているものを選ぶにはヘルムホルツエネルギーを規格化の下で最小にすれば良い。
+                \begin{align}
+                    \mathrm{minimize}~~~~F=\mathrm{Tr}[\rho_{\mathrm{whole}} H +T\rho_{\mathrm{whole}}\log \rho_{\mathrm{whole}}+\sum \lambda_i (\rho_{i}-1)]
+                \end{align}
+                基底としてそれぞれのスピンの密度行列を対角化する規定をとって、対角成分を変数として微分する。右辺第一項では対角成分における微分は対角成分を１と置き換えることに等しい。トレースによってあるスピン周りのスピンの平均値が取られるから、
+                これは隣接するスピン同士の相互作用を平均値に置き換えることに等しい操作である。
+                \begin{align}
+                    \frac{\partial}{\partial \braket{S_i,\rho_i S_i}}\mathrm{Tr}[\rho_{\mathrm{whole}} H]=\mathrm{Tr}_{\braket{S_i,\rho_i S_i}=1}[\rho_{\mathrm{whole}} H]=JmzS_i +hS_i
+                \end{align}
+                対角成分による微分から
+                \begin{align}
+                    \braket{S_i,\rho_i S_i}\propto \exp\beta \left(Jmz+h\right)S_i
+                \end{align}
+                が得られて($m:=\braket{S}$)自己無撞着方程式\eqref{1}式が得られる。
+            \subsubsection{相関効果}
+                平均馬近似がどれほどの誤差を生み出すのか見てみよう。
+                １つのスピンに注目すると、そのスピンのハミルトニアン は
+                \begin{align}
+                    H_S=-(J\sum_{S';\mathrm{around S}}S' +h)S
+                \end{align}
+                であって、そのカノニカル分布における平均値は
+                \begin{align}
+                    \braket{S}=\mathrm{Tr}Se^{-\beta H_S}=\left\langle  \tanh \beta(J\sum_{S';\mathrm{around S}}S' +h)\right\rangle
+                \end{align}
+                乱暴に$S'\to\braket{S'}=m=\braket{S}$として熱平均を外して仕舞えば自己無撞着方程式\eqref{1}式がえられる。
+                ここから平均場近似が相関を無視する近似であることは容易に理解できる。
+        \subsection{ランダウ理論}
+            基本事項は省略する。
+            \subsubsection{１次相転移}
+                自由エネルギーを
+                \begin{align}
+                    f(m):=f_0 +am^2 +bm^4 -mh
+                \end{align}
+                と書き下す。$m$の極値を与える磁化を求めるために$m$で微分する。
+                \begin{align}
+                    \frac{\partial}{\partial m}f(m)=2am +4bm^3 -h=0
+                \end{align}
+                すると$m$は３つの解をもつ。複数の解を持つが、ランダウ関数の対称性と係数の符号の固定から安定・準安定状態の入れ替わりは起こらず、１次相転移が再現されない\footnote{従って対称性が壊れるようであればやはり１次相転移を示すはずである。}。
+            \subsubsection{３重臨界点のランダウ理論}
+                ランダウ関数の磁化の４次の項の係数が負となることを許すと、磁化の平衡値は無限に大きくなることが許される。
+                そこで、安定性のために磁化の６次の項を入れよう。
+                \begin{align}
+                    f(m):=f_0 +\frac{1}{2}am^2 +\frac{1}{4}bm^4+\frac{1}{6}cm^6 -mh
+                \end{align}
+                $c>0,b<0$のみ仮定しておき、$a,b$の符号は自由とする。簡単のために$h=0$とする。 極値を与える磁化は
+                \begin{align}
+                    \frac{\partial}{\partial m}f(m)=m(a+bm^2+cm^4)=0
+                \end{align}
+                であって、６次関数には複数の解がある場合があるから安定状態と準安定状態を考える。
+                    \if0
+                    まずは６次関数を適当に眺めよう。
+                    \begin{figure}
+                        \begin{center}
+                            \begin{tikzpicture}[domain=-2.3:2.3]
+                                %\draw [help lines] (0,0) grid (10,4);
+                                \draw[->] (-3,0) -- (3,0) node[right] {$x$};%横軸（x軸）
+                                \draw[->] (0,-0.5) -- (0,3) node[above] {$y$};%縦軸
+                                \draw[color=black,smooth,thick] plot (\x,{0.5*(\x)^2-0.6*(\x)^4+0.1*(\x)^6}) node[right] {};
+                                \coordinate (O) at (0,0) node [above right] at (O) {$O$};
+                            \end{tikzpicture}
+                        \end{center}
+                        \caption{適当な６次関数}
+                    \end{figure}
+                    図には５つの停留点があって、これらは$a,b,c$の振る舞いによって消えたり移動したりする。
+                    \fi
+                極小値が存在するのは$a\leq b^2/4c$の場合であり、$m\neq 0$における極小値が最小値となるのは$a\leq 3b^2/16$の場合である。
+                $a,b$に対して相図を書くと、図\ref{2.7}が得られる。
+                \begin{figure}
+                    \begin{center}
+                        \begin{tikzpicture}[domain=-2.3:2.3]
+                            %\draw [help lines] (0,0) grid (10,4);
+                            \draw[->] (-2,0) -- (2,0) node[right] {$a$};%横軸（x軸）
+                            \draw[->] (0,-0.5) -- (0,2) node[above] {$b$};%縦軸
+                            \draw[domain=-2:0,color=red,smooth,thick] plot (\x,{\x*\x/3}) node[right] {};
+                            \draw[domain=0:2,color=blue,smooth,thick] plot (\x,{0}) node[right] {};
+                            \coordinate (O) at (0,0) node [above right] at (O) {$O$};
+                        \end{tikzpicture}
+                    \end{center}
+                    \caption{$a,b$の相図}
+                    \label{2.7}
+                \end{figure}
+                相転移は図\ref{2.7}の赤線、青線でおこる。赤線では準安定状態が$m,f(m)$のグラフにおいて原点から離れたところで安定状態へと切り替わるために１次であり、青線では原点に吸い寄せられる、あるいは原点から離れるようにして磁化が生じるために２次である。
+        \subsection{無限レンジ模型}
+            あらゆるスピン同士の相互作用が同じ結合定数であるとして取り込むことを考えると、ハミルトニアンは
+            \begin{align}
+                H=-\frac{J}{2N}\sum_{i,j;i\neq j}S_i S_j
+            \end{align}
+            となる。カノニカル分布で分配関数を計算する。
+            \begin{align}
+                Z&=\mathrm{Tr}\exp\frac{\beta J}{2N}\left(\sum_{i,j}S_i S_j -\sum_i S_i ^2\right)\\
+                &=e^{-\beta J/2}\mathrm{Tr}\exp\frac{\beta J}{2N}\left(\sum_{i}S_i \right)^2
+            \end{align}
+            肩に乗っている$\left(\sum_{i}S_i \right)^2$の２乗はガウス積分を用いて外すことができて、
+            \begin{align}
+                Z&=e^{-\beta J/2}\mathrm{Tr}\sqrt{\frac{\beta J}{2\pi}}\int_{\mathbb{R}}dq \exp\left(-N\beta Jq^2 /2+\beta Jq \sum_i S_i\right)\label{2.32}\\
+                &=e^{-\beta J/2}\mathrm{Tr}\sqrt{\frac{\beta J}{2\pi}}\int_{\mathbb{R}}dq \exp\left(-N\beta Jq^2 /2+N\log 2\cosh \beta J q\right)
+            \end{align}
+            分配関数から熱力学関数を計算する際には$\log$が取られる\footnote{高校で叩き込まれたはずですが、対数の引数の積は対数の和になることを感覚で理解していないのではないかと、疑わなくてはならないのか？筆者の受けた演習の講義で助教の方が嘆いていらしたのですが、国立の地方大学では対数の計算ができない物理を専門とする学生が現実に存在することを聞いて、ショックを受けたそうです。}から、分配関数の計算の際の被積分関数の鋭いピークの値のみが重要である。
+            \begin{align}
+                \log Z \sim \log \mathrm{max}_{q\in\mathbb{R}}\{\exp\left(-N\beta Jq^2 /2+N\log 2\cosh \beta J q\right)\}
+            \end{align}
+            最大値を与える$q$を$\bar{q}$として、１スピンあたりの自由エネルギーは
+            \begin{align}
+                f(\bar{q})=\frac{1}{\beta}\left(\frac{\beta J \bar{q}}{2}-\log 2\cosh \beta J \bar{q}\right)
+            \end{align}
+            $\bar{q}$はその定義から次の式を満たす。
+            \begin{align}
+                \bar{q}=\tanh \beta J\bar{q}
+            \end{align}
+            これは平均馬近似で得た自己無撞着方程式に一致する。\eqref{2.32}式のままで鞍点条件は$q=N^{-1}\sum_i S_i$であるから、$q$が磁化に対応することが見て取れる。
+
+            無限レンジ模型は平均場理論が正しい結果を与えるが、これはハミルトニアン が
+            \begin{align}
+                H\simeq -\frac{J}{2}\sum_{i}S_i \frac{1}{N}\sum_j  S_j
+            \end{align}
+            であることから、１つのスピンとスピンの平均値の相互作用の形になっていることからわかる\footnote{とはいえ無限レンジ系は熱力学的に健全な系ではないことに注意する。}。
+
+        \subsection{Bethe近似}
+            １つのスピンとその最近接のスピンをひとまとめにし、その先との相互作用を適当な有効場で扱う。ひとまとめのスピンのハミルトニアンは
+            \begin{align}
+                H=-J\sum_{S';\mathrm{around}S}S'S-h\sum_{S';\mathrm{around}S,S}S'-h_{\mathrm{effective}}\sum_{S';\mathrm{around}S}S'
+            \end{align}
+            で与えられる。第一項はひとまとめの系の相互作用、第二項はひとまとめの系のスピンと外部磁場の相互作用、第三項は最近接スピンと有効磁場の相互作用である。
+            分配関数は$Z_\pm :=e^{\pm\beta h}2\cosh \beta(\pm J+h+h_{\mathrm{effective}})$として$Z=Z_+ +Z_-$である。まず、着目しているスピンの平均値は明らかに
+            \begin{align}
+                \braket{S}=\frac{Z_+ -Z_-}{Z}
+            \end{align}
+            である。最近接スピンの平均値は$h_{\mathrm{effective}}$による微分でえられて、
+            \begin{align}
+                \braket{S'}=\frac{\partial \log Z}{z\partial \beta h_{\mathrm{effective}}}=\frac{1}{Z}(Z_+\tanh \beta(J+h+h_{\mathrm{effective}})+Z_-\tanh \beta(-J+h+h_{\mathrm{effective}}))
+            \end{align}
+            系の対称性から$\braket{S}=\braket{S'}$が要請されて、次の自己無撞着方程式がえられる。($z$:最近接のスピンの数)
+            \begin{align}
+                e^{2\beta h_{\mathrm{effective}}}=\left(\frac{\cosh \beta(J+h+h_{\mathrm{effective}}}{\cosh \beta(-J+h+h_{\mathrm{effective}}}\right)^{z-1}
+            \end{align}
+            自己無撞着方程式を$h=0$として$\beta h_{\mathrm{effective}}$についての導関数の比較で転移温度がえられて、$\tanh J/T_c =1/(z-1)$がえられる。
+        \subsection{相関関数}
+            \subsubsection{相関関数}
+                ランダウ理論を拡張しよう\footnote{アナルみたいに}。ランダウの自由エネルギーを拡張して
+                \begin{align}
+                    F=\int d^d \bm{q}(a\bm{m}(\bm{q})^2+b(\nabla\cdot\bm{m}(\bm{q}))^2))=\int d^d \bm{q}(a\bm{m}(\bm{q})^2+b(\nabla\cdot\bm{m}(\bm{q}))^2))=\int d^d \bm{q}(a\bm{m}^2-b\bm{m}\cdot \Delta \bm{m})
+                    \label{2.47}
+                \end{align}
+                から議論を始める\footnote{転移点以上で臨界指数を求めるなら、４次の項はいらない。しかし４次まで考えることで磁化率を磁化の磁場による汎関数微分として導出できる。}。
+                この計算にはフーリエ変換が便利である。次のようにしてフーリエ変換を定める\footnote{参考文献では$(2\pi)^d$は逆についていたが、この流儀は大鷲氏に従った。}。
+                \begin{align}
+                    &\mathcal{F}[f](\bm{k}):=\frac{1}{(2\pi)^d}\int d^d \bm{q}e^{-i\bm{k}\cdot\bm{q}}f(\bm{q})\\
+                    &\mathcal{F}^{-1}[f](\bm{q}):=\int d^d \bm{k}e^{i\bm{k}\cdot\bm{q}}f(\bm{k})
+                \end{align}
+                自由エネルギーの計算には$\mathcal{F}^{-1}[1](\bm{q}-\bm{q}')=(2\pi)^d\delta^d (\bm{q}-\bm{q}')$が便利である。
+                \begin{align}
+                    \int d^d \bm{q}d^d \bm{q}' \delta^d (\bm{q}-\bm{q}') \bm{m}(\bm{q})\cdot\bm{m}(\bm{q}')
+                    &=(2\pi)^d\int d^d \bm{q}d^d \bm{q}' \mathcal{F}^{-1}[1](\bm{q}-\bm{q}') \bm{m}(\bm{q})\cdot\bm{m}(\bm{q}')\\
+                    &=\frac{1}{(2\pi)^d}\int d^d \bm{k}\mathcal{F}[\bm{m}](\bm{k})\mathcal{F}[\bm{m}](-\bm{k})
+                \end{align}
+                \begin{align}
+                    \int d^d \bm{q}d^d \bm{q}' \delta^d (\bm{q}-\bm{q}') \bm{m}(\bm{q})\cdot \Delta \bm{m}(\bm{q}')
+                    &=-\frac{1}{(2\pi)^d}\int d^d \bm{k}\bm{k}^2\mathcal{F}[\bm{m}](\bm{k})\mathcal{F}[\bm{m}](-\bm{k})
+                \end{align}
+                \begin{align}
+                    F=\frac{1}{(2\pi)^d}\int d^d \bm{k}(a+b\bm{k}^2)\mathcal{F}[\bm{m}](\bm{k})\mathcal{F}[\bm{m}](-\bm{k})
+                \end{align}
+                \if0
+                相関関数を計算しよう。そのために相関定理
+                \begin{align}
+                    \frac{1}{(2\pi)^d}\mathcal{F}\left[\int_\mathbb{R} dq' f(q+q')g(q')\right]=\mathcal{F}[f](\bm{k})\mathcal{F}[g](-\bm{k})=\mathcal{F}[f](\bm{k})\mathcal{F}[g]^*(\bm{k})
+                \end{align}
+                を利用する(２つめの等号では$f,g$が実関数であることを用いた。)。真ん中の部分は畳み込みとは$f$の中の$q'$の符号を変えることで移行することができて、ひとまとめに
+                \begin{align}
+                    \frac{1}{(2\pi)^d}\mathcal{F}\left[\int_\mathbb{R} dq' f(q\pm q')g(q')\right]=\mathcal{F}[f](\bm{k})\mathcal{F}[g](\mp\bm{k})
+                \end{align}
+                と書くことができる\footnote{旨味はそこまでないけど}。改めて相関関数を書き直そう。
+                \fi
+                相関関数の熱平均では$e^{-\beta F}$の重みがついて経路積分されるから、ヘルムホルツエネルギーはフーリエ変換された磁化によって書かれている方が計算しやすい。そこで磁化についてもフーリエ変換された形で書く\footnote{\eqref{2-susy}から\eqref{2-kuitai}の式変形では$\braket{\bm{m}(\bm{k})\cdot \bm{m}(-\bm{k}')}$が自由場の２点相関関数となっていることを考慮すると$\delta(\bm{k}-\bm{k}')H(\bm{k})$という関数になっていることを利用し、略記したものですが、もしあなたがレポートでこのような略記を用いたならば一発で不合格になるレベルの負の点数を差し上げます。}。
+                %$\bm{q}_\pm =\bm{q}\pm\bm{q}',\bm{k}_\pm =\bm{k}\pm\bm{k}'$として、
+                \if0
+                    \begin{align}
+                        G(\bm{q}-\bm{q}')=&\braket{\bm{m}(\bm{q})\cdot \bm{m}(\bm{q}')}\\
+                        &=\int d^d \bm{k}d^d \bm{k}' e^{i(\bm{k}\cdot\bm{q}+\bm{k}'\cdot\bm{q}')}\int d^d \bar{\bm{q}}d^d \bar{\bm{q}}'e^{-i(\bm{k}\cdot\bar{\bm{q}}+\bm{k}'\cdot\bar{\bm{q}}')}\braket{\bm{m}(\bar{\bm{q}})\cdot \bm{m}(\bar{\bm{q}}')}\\
+                        &=\int d^d \bm{k}d^d \bm{k}' e^{i(\bm{k}\cdot\bm{q}+\bm{k}'\cdot\bm{q}')}\int d^d \bar{\bm{q}}d^d \bar{\bm{q}}' e^{-i(\bm{k}\cdot\bar{\bm{q}}+\bm{k}'\cdot\bar{\bm{q}}')}G(\bar{\bm{q}}-\bar{\bm{q}}')\\
+                        &=\int d^d \bm{k}_+d^d \bm{k}_- e^{\frac{i}{2}(\bm{k}_+ \cdot \bm{q}_+ +\bm{k}_-\cdot \bm{q}_-)}\int d^d \bm{q}_+d^d \bm{q}_- e^{-\frac{i}{2}(\bm{k}_+ \cdot \bar{\bm{q}}_+ +\bm{k}_-\cdot \bar{\bm{q}}_-)}G(\bm{q}_-)\\
+                        &=\int d^d \bm{k}_+d^d \bm{k}_- e^{\frac{i}{2}(\bm{k}_+ \cdot \bm{q}_+ +\bm{k}_-\cdot \bm{q}_-)}\delta(-\bm{k}_+/2)\mathcal{F}[G](\bm{k}_- /2)\\
+                        &=\int_{\bm{k}_+ =\bm{0}} d^d \bm{k}_- e^{i\bm{k}_- \cdot \bm{q}_-}\mathcal{F}[G](\bm{k}_- )\\
+                        &=(2\pi)^d \int d^d\bm{k}\left\langle|\mathcal{F}[\bm{m}](\bm{k})|^2 \right\rangle e^{i\bm{k}\cdot \bm{q}}
+                    \end{align}
+                \fi
+                \begin{align}
+                    G(\bm{q}-\bm{q}')=&\braket{\bm{m}(\bm{q})\cdot \bm{m}(\bm{q}')}\\
+                    &=\frac{1}{(2\pi)^{2d}}\int d^d \bm{k}d^d \bm{k}' e^{i(\bm{k}\cdot\bm{q}-\bm{k}'\cdot\bm{q}')}\int d^d \bar{\bm{q}}d^d \bar{\bm{q}}'e^{-i(\bm{k}\cdot\bar{\bm{q}}-\bm{k}'\cdot\bar{\bm{q}}')}\braket{\bm{m}(\bar{\bm{q}})\cdot \bm{m}(\bar{\bm{q}}')}\\
+                    &=\int d^d \bm{k}d^d \bm{k}' e^{i(\bm{k}\cdot\bm{q}-\bm{k}'\cdot\bm{q}')}\braket{\mathcal{F}[\bm{m}]({\bm{k}})\cdot \mathcal{F}[\bm{m}](-\bm{k}')}\label{2-susy}\\
+                    &=\int d^d\bm{k}\left\langle|\mathcal{F}[\bm{m}](\bm{k})|^2 \right\rangle e^{i\bm{k}\cdot (\bm{q}-\bm{q}')}\label{2-kuitai}
+                \end{align}
+                熱平均については経路積分を用いて計算することができる。
+                \begin{align}
+                    \left\langle|\mathcal{F}[\bm{m}](\bm{k})|^2 \right\rangle=\frac{\int D \bm{m}|\mathcal{F}[\bm{m}]|^2 e^{-\beta F[\bm{m}]}}{\int D \bm{m} e^{-\beta F[\bm{m}]}}=\frac{(2\pi)^{-d}}{2\beta (a+b\bm{k}^2)}
+                \end{align}
+                結果として、我々は相関関数を次のようにして得ることができる。
+                \begin{align}
+                    G(\bm{q},\bm{0})=\frac{1}{2\beta }\int d\bm{k}e^{i\bm{k}\cdot\bm{q}}\frac{1}{a+b\bm{k}^2}
+                \end{align}
+                これは次の微分方程式のグリーン関数である\footnote{\url{https://math.stackexchange.com/questions/2254939/fundamental-solution-for-helmholtz-equation-in-higher-dimensions}}。
+                \begin{align}
+                    (-\Delta +\xi^{-2} )G(\bm{q})=\delta (\bm{q})
+                \end{align}
+                当方的な解を仮定すると、このグリーン関数はハンケル関数で表される。
+                \begin{align}
+                    G(\bm{q})=q^{1-d/2}H^{(1)}_{d/2 -1}(iq/\xi),q^{1-d/2}H^{(2)}_{d/2 -1}(iq/\xi)
+                \end{align}
+                $\xi=\sqrt{b/a}$であるから、$q\to \infty$において発散しないように解として$H^{(1)}_{d/2 -1}(iq/\xi)$を選ぶ。第１種ハンケル関数の漸近形から$q\gg 1$では
+                \begin{align}
+                    G(\bm{q})\sim q^{-(d-1)/2}e^{-q/\xi}
+                \end{align}
+                $\xi$は相関長であり、その臨界指数は定義から$1/2$である。臨界点においては$q/\xi\sim 0$における漸近形を用いて
+                \begin{align}
+                    G(\bm{q})\sim q^{-d+2}
+                \end{align}
+                がえられる。
+            \subsubsection{磁化率}
+                磁化率も求めてみよう。揺動散逸関係式から磁化は相関関数に一致することがわかるが、ここでは直接磁化の磁場に対する応答として計算する。\eqref{2.47}式じ磁場を加えて出発する。
+                等温環境では実現されるのはヘルムホルツエネルギーが最小となる場合であった。そこでヘルムホルツエネルギーが停留値となるように
+                \begin{align}
+                    \delta F=\int d^d\bm{q}(2a\bm{m}\cdot\bm{\delta}-b\delta \bm{m}\cdot \Delta \bm{m}-b \bm{m}\cdot \Delta \delta\bm{m}-\delta \bm{m}\cdot\bm{h})=\int d^d\bm{q}(2a\bm{m}\cdot\delta\bm{m}-2b\delta \bm{m}\cdot \Delta \bm{m}-\delta \bm{m}\cdot\bm{h})
+                \end{align}
+                最後の式変形ではグリーンの定理を用いて、表面の積分を$0$とした。従って停留条件は
+                \begin{align}
+                    (a-b\Delta) \bm{m}=\bm{h}
+                \end{align}
+                である。磁場$\delta \bm{h}$に対する磁化の応答を$\delta\bm{m}$で与えると磁化率が汎関数微分としてえられて、ヘルムホルツ方程式のグリーン関数となっていることがわかる。　
+        \subsection{適用限界}
+            揺らぎが平均値よりも十分小さい条件だよ♪
+        \subsection{動的臨界現象}
+            時間に依存する、非平衡状態を考える。
+            \subsubsection{ブラウン運動}
+                係数$\Gamma$の摩擦とランダムな力$\zeta(t)$を受けて運動している時の運動方程式を考える。
+                \begin{align}
+                    \dot{v}(t)=-\Gamma v(t)+\zeta(t)
+                \end{align}
+                $\zeta$に対する応答として見るならばラプラス変換で見ると良いだろう。
+                \begin{align}
+                    -s\mathcal{L}[v](s)&=-\Gamma \mathcal{L}[v](s)+\mathcal{L}[\zeta](s)\\
+                    (-s+\Gamma)\mathcal{L}[v](s)&=\mathcal{L}[\zeta](s)
+                \end{align}
+                左辺の係数を右辺に写す際にはカーネルを消さないように注意して、
+                \begin{align}
+                    \mathcal{L}[v](s)=-\frac{\mathcal{L}[\zeta](s)}{s-\Gamma}+c\delta(s-\Gamma)
+                \end{align}
+                第一項の逆変換は$\zeta$に対する応答を畳み込みの形で与え、第二項は初期条件に対応する。
+                \begin{align}
+                    \mathcal{L}^{-1}[\mathcal{L}[v]](t)&=-\mathcal{L}^{-1}\left[\frac{\mathcal{L}[\zeta](s)}{s-\Gamma}\right](t)+c\mathcal{L}^{-1}[\delta(s-\Gamma)](t)\\
+                    &=\int_{(0,t)}dt'e^{-\Gamma(t-t')}\zeta (t')+v(0)e^{-\Gamma t}
+                \end{align}
+                十分な時間がたてば第二項を無視してよくて、粒子の運動はほとんど第一項で決まる。速度の２乗平均は
+                \begin{align}
+                    \braket{v^2(t)}=\int_{(0,t)}dt'dt'' e^{-\Gamma(2t-t'-t'')}\braket{\zeta (t')\zeta (t'')}
+                \end{align}
+                ランダムな力の相関\footnote{ここの相関は熱平均ではなくて、時間平均だから$\int_{\mathbb{R}} dt' \zeta(t+t')\zeta(t')$と思っていたがやはり熱平均らしい}は薄いとして、その相関をデルタ関数で与えよう。$\braket{\zeta(t)\zeta(t')}=2D\delta(t-t')$として、
+                \begin{align}
+                    =\int_{(0,t)}dt'dt'' e^{-\Gamma(2t-t'-t'')}2D\delta(t'-t'')=\frac{D}{\Gamma}(1-e^{-2\Gamma t})
+                \end{align}
+                $t$を十分大きくとることでアインシュタインの関係式
+                \begin{align}
+                    D\sim \Gamma T
+                \end{align}
+                が導かれる。ラプラス変換からフーリエ変換への移行は$-s$の実部を除けばよくて、$\zeta$に対する応答を見るためにカーネルを除くと
+                \begin{align}
+                    \mathcal{F}[v](\omega)=\frac{\mathcal{F}[\zeta](\omega)}{i\omega-\Gamma}=:\mathcal{F}[G](\omega)\mathcal{F}[\zeta](\omega)
+                    \label{2.74}
+                \end{align}
+                となって応答関数が$\zeta$のラプラス変換の係数として自然に導入される。
+                \if0
+                相関関数のフーリエ変換についても述べておこう。相関関数
+                \begin{align}
+                    C(t,t_0):=\braket{v(t+t_0)v(t_0)}
+                \end{align}
+                をフーリエ変換する。
+                \begin{align}
+                    \mathcal{F}[C](\omega,\omega')&=\frac{1}{2\pi}\int dt dt_0  e^{-i\omega(t+t_0)}e^{i\omega' t_0}\braket{v(t+t_0)v(t_0)}\\
+                    &=2\pi\braket{\mathcal{F}[v](\omega)\mathcal{F}[v](-\omega')}
+                \end{align}
+                \eqref{2.74}式を代入して、さらに$\zeta(t)$の相関をデルタ関数で与える。$\zeta(t)$の相関のフーリエ変換\footnote{最左辺の標識が正しいかどうかは知らない。}は
+                \begin{align}
+                    \braket{\mathcal{F}[\zeta,\zeta](\omega,\omega')}=\braket{\mathcal{F}[\zeta](\omega)\mathcal{F}[\zeta](\omega')}=\frac{D}{\pi}\delta(\omega+\omega')
+                \end{align}
+                これを用いて
+                \begin{align}
+                    \mathcal{F}[C](\omega)&=2\pi\braket{\mathcal{F}[G](\omega)\mathcal{F}[\zeta](\omega)\mathcal{F}[G](-\omega)'\mathcal{F}[\zeta](-\omega')}\\
+                    &=\frac{D}{\pi}\delta(\omega+\omega')\mathcal{F}[G](\omega)\mathcal{F}[G](-\omega')\\
+                    &=
+                \end{align}
+                \fi
+                相関関数のフーリエ変換についても述べておこう。相関関数
+                \begin{align}
+                    C(t-t'):=\braket{v(t)v(t')}
+                \end{align}
+                をフーリエ変換する。
+                \begin{align}
+                    \mathcal{F}[C](\omega,\omega')&=\frac{1}{2\pi}\delta(\omega-\omega')\int dt dt_0  e^{-i\omega t}e^{i\omega' t'}\braket{v(t)v(t')}\\
+                    &=2\pi\delta(\omega-\omega')\braket{\mathcal{F}[v](\omega)\mathcal{F}[v](-\omega')}
+                \end{align}
+                \eqref{2.74}式を代入して、さらに$\zeta(t)$の相関をデルタ関数で与える。$\zeta(t)$の相関のフーリエ変換\footnote{最左辺の標識が正しいかどうかは知らない。}は
+                \begin{align}
+                    \braket{\mathcal{F}[\zeta](\omega)\mathcal{F}[\zeta](-\omega')}=\frac{D}{\pi}\delta(\omega-\omega')
+                \end{align}
+                これを用いて
+                \begin{align}
+                    \mathcal{F}[C](\omega,\omega')&=2\pi\braket{\mathcal{F}[G](\omega)\mathcal{F}[\zeta](\omega)\mathcal{F}[G](-\omega)'\mathcal{F}[\zeta](-\omega')}\\
+                    &=2D\delta(\omega-\omega')\mathcal{F}[G](\omega)\mathcal{F}[G](-\omega')\\
+                    \mathcal{F}[C](\omega)&=2\Gamma T \mathcal{F}[G](\omega)\mathcal{F}[G](-\omega)=\frac{2\Gamma T}{\Gamma^2+\omega^2}=\frac{2\Gamma T}{\omega}\mathrm{Im}[\mathcal{F}[G](\omega)]
+                \end{align}
+                これは揺動散逸定理と呼ばれている。
+
+            \subsubsection{ガウス模型}
+                局所磁化が次の式に従うとする。
+                \begin{align}
+                    \frac{\partial}{\partial t}\bm{m}(\bm{q},t)=-\Gamma \frac{\delta F}{\delta \bm{m}(\bm{q},t)}+\zeta (\bm{q},t)
+                    \label{2.80}
+                \end{align}
+                右辺第一項は$-\int d^d \bm{q}'\Gamma(\bm{q}-\bm{q}')\frac{\delta F}{\delta \bm{m}(\bm{q}',t)}$の略記であることに注意する\footnote{汎関数微分であるのだから、空間全体の情報がなければならないとすれば自然でしょう。}。
+                $\zeta(\bm{q})$はランダムなガウス変数として、相関を次の式で定める。
+                \begin{align}
+                    \braket{\zeta(\bm{q},t)\zeta(\bm{q}',t')}=2T\Gamma (\bm{q}-\bm{q}')\delta(t-t')
+                \end{align}
+                自由エネルギーについては
+                \if0
+                \begin{align}
+                    F=\int d^d\bm{q}(a\bm{m}(\bm{q},t)^2 -b\bm{m}(\bm{q},t)\Delta \bm{m}(\bm{q},t))
+                \end{align}
+                \fi
+                \eqref{2.74}式を与えることにする。自由エネルギーの汎関数微分は
+                \begin{align}
+                    \frac{\delta F}{\delta \bm{m}(\bm{q},t)}=2a\bm{m}(\bm{q},t)-2b\Delta \bm{m}(\bm{q},t)
+                \end{align}
+                \eqref{2.80}式をフーリエ変換して
+                \begin{align}
+                    \frac{\partial}{\partial t}\mathcal{F}[\bm{m}](\bm{k},t)=-2(a+b\bm{k}^2 )\mathcal{F}[\Gamma](\bm{k})\mathcal{F}[\bm{m}](\bm{k},t)+\mathcal{F}[\zeta](\bm{k},t)
+                \end{align}
+                となってブラウン運動の運動方程式と同じ形の微分方程式が得られる。ランダム変数$\mathcal{F}[\zeta]$についての平均値は
+                \begin{align}
+                    \frac{\partial}{\partial t}\braket{\mathcal{F}[\bm{m}](\bm{k},t)}=-2(a+b\bm{k}^2 )\mathcal{F}[\Gamma](\bm{k})\braket{\mathcal{F}[\bm{m}](\bm{k},t)}
+                \end{align}
+                したがって$\braket{\mathcal{F}[\bm{m}](\bm{k},t)}$は緩和時間$1/2(a+b\bm{k}^2 )\mathcal{F}[\Gamma](\bm{k})$で減衰する。
+
+
+
+
+
+
+
+            
+
+
+
+
+         \if0
+                \begin{align}
+                    G(\bm{q})=\braket{\bm{m}(\bm{q})\cdot \bm{m}(0)}=\frac{1}{(2\pi)^d}\int d^d \bm{k}\langle\mathcal{F}[\bm{m}](\bm{k})\mathcal{F}[\bm{m}](-\bm{k})\rangle 
+                \end{align}
+
+                \begin{align}
+                    \bm{m}(\bm{q})\cdot \bm{m}(0)&=\int d^d \bm{q}' \bm{m}(\bm{q}-\bm{q}')\cdot\bm{m}(\bm{q}')\delta^d(\bm{q}')\\
+                    &=\mathcal{F}^{-1}\left[\mathcal{F}\left[\int d^d \bm{q}' \bm{m}(\bm{q}-\bm{q}')\cdot\bm{m}(\bm{q}')\delta^d(\bm{q}')\right]\right]\\
+                    &=\mathcal{F}^{-1}[\mathcal{F}[\bm{m}](\bm{k})\cdot \int d^d \bm{q}' e^{-i\bm{k}\cdot\bm{q}'}\bm{m}(\bm{q}')\delta^d(\bm{q}')]\\
+                    &=
+                \end{align}
+
+                \begin{align}
+                    \bm{m}(\bm{q})\cdot \bm{m}(0)&=\int d^d \bm{q}' \bm{m}(\bm{q}-\bm{q}')\cdot\bm{m}(\bm{q}')\delta^d(\bm{q}')\\
+                    &=\frac{1}{(2\pi)^d}\int d^d \bm{q}' d^d \bm{k}'\bm{m}(\bm{q}-\bm{q}')\cdot\bm{m}(\bm{q}')e^{i\bm{k}'\cdot\bm{q}'}\\
+                    &=\frac{1}{(2\pi)^d}\int d^d \bm{q}'' d^d \bm{k}'\bm{m}(\bm{q}'')\cdot\bm{m}(\bm{q}')e^{-i\bm{k}'\cdot\bm{q}''}e^{i\bm{k}'\cdot\bm{q}}
+                \end{align}
+
+        \fi
+
+    
+            
+            
+
+            
+
+
+
+
+
+
+\end{document}
